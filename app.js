@@ -1,6 +1,9 @@
 const inquirer = require("inquirer");
-const fs = require('fs');
-const generatePage = require('./src/page-template');
+// const fs = require('fs');
+// const generateSite = require('./utils/generate-site.js');
+//or
+const { writeFile, copyFile } = require('./utils/generate-site.js');
+const generatePage = require('./src/page-template.js');
 
 const promptUser = () => {
   return inquirer.prompt([
@@ -153,21 +156,27 @@ promptUser()
 */
 // to not face call back hell and pyramid of doom we need to use then with functions we will create shortly
 promptUser()
+// ask user for their information with Inquirer prompts, returns data as an Object if Promise
   .then(promptProject)
+  // The promptProject() function captures the returning data from promptUser() and we recursively call promptProject() for as many projects as the user wants to add. Each project will be pushed into a projects array in the collection of portfolio information, and when we're done, the final set of data is returned to the next .then().
   .then(portfolioData => {
+    //The finished portfolio data object is returned as portfolioData and sent into the generatePage() function, which will return the finished HTML template code into pageHTML.
     return generatePage(portfolioData);
   })
   .then(pageHTML => {
+    //We pass pageHTML into the newly created writeFile() function, which returns a Promise. This is why we use return here, so the Promise is returned into the next .then() method.
     return writeFile(pageHTML);
   })
   .then(writeFileResponse => {
+    // Upon a successful file creation, we take the writeFileResponse object provided by the writeFile() function's resolve() execution to log it, and then we return copyFile().
     console.log(writeFileResponse);
     return copyFile();
   })
   .then(copyFileResponse => {
+    // The Promise returned by copyFile() then lets us know if the CSS file was copied correctly, and if so, we're all done!
     console.log(copyFileResponse);
   })
   .catch(err => {
     console.log(err);
   });
-  //stopped at 954
+  //stopped at 956
