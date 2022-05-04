@@ -132,16 +132,42 @@ const promptProject = portfolioData => {
 
 // don't forget to switch it back
 // const pageHTML = generatePage(mockData);
+/*
 promptUser()
   .then(promptProject)
   .then(portfolioData => {
     // console.log(portfolioData);
     const pageHTML = generatePage(portfolioData);
-    
-    fs.writeFile('./index.html', pageHTML, err => {
+    // takes path, argument with data and call back handler err
+    fs.writeFile('./dist/index.html', pageHTML, err => {
       if (err) throw new Error(err);
-    
+      // if no errors gives this message to console.
       console.log('Portfolio complete! Check out index.html to see the output!');
+      // and runs copy file.
+      fs.copyFile('./src/style.css', './dist/style.css', err => {
+        if (err) throw new Error(err);
+        console.log('Style sheet copied successfully!')
+      });
     });
-    
   });
+*/
+// to not face call back hell and pyramid of doom we need to use then with functions we will create shortly
+promptUser()
+  .then(promptProject)
+  .then(portfolioData => {
+    return generatePage(portfolioData);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+  //stopped at 954
